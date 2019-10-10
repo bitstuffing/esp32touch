@@ -4,6 +4,6 @@ cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/components/hardware)
+set(EXTRA_COMPONENT_DIRS ${CMAKE_SOURCE_DIR}/components/hardware ${CMAKE_SOURCE_DIR}/components/tjpgd)
 
 project(esp32touch)
