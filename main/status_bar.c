@@ -1,7 +1,7 @@
 #include <display.h>
 #include <ui.h>
 #include <stdio.h>
-
+#include "max1726x.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
@@ -19,12 +19,18 @@
 
 void status_bar_draw(void)
 {
+
+
+	FuelGaugeReads_t BateryData;
+	BateryData.EstimateTimeToEmpty = 0x0000 ;
+	BateryData.RemainingCapacity = 0x0000 ;
+	BateryData.StateOfChargePercentage = 0x0000;
+
 	// Read battery status and format into string
-	//BatteryInfo info;
-	//battery_read(&info);
+	UpdateStatus(&BateryData);
 	char bat_str[64];
-	//snprintf(bat_str, 64, "BAT: %d%% %dmV", info.percentage, info.voltage_mv);
-  snprintf(bat_str, 64, "BAT: %d%% %dmV", 1, 4200); //TODO
+	snprintf(bat_str, 64, "BAT: %d%% %dmV", (int)BateryData.StateOfChargePercentage, (int)BateryData.RemainingCapacity);
+  //snprintf(bat_str, 64, "BAT: %d%% %dmV", 1, 4200); //TODO
 
 	// Draw to fb and update section
 	tf_metrics_t m = tf_get_str_metrics(ui_font_black, bat_str);

@@ -45,9 +45,9 @@ static void gpio_task_example(void* arg){
 }
 
 static void fuel_gauge_init(void){
-  	ESP_LOGD(TAG, "Inicio max.....\n");
+  	ESP_LOGI(TAG, "Inicio max.....\n");
   	InitalizeFuelGauge();
-  	ESP_LOGD(TAG, "\n\nPrueba de lectura en i2c direccion 0x36 ###\n");
+  	ESP_LOGI(TAG, "\n\nPrueba de lectura en i2c direccion 0x36 ###\n");
   	//Prueba i2c
 
   	i2c_detect();
@@ -58,21 +58,21 @@ static void fuel_gauge_init(void){
   	i2c_master_read_slave_reg(0x36, 0x18, _data, 2);
 
   	for (int i = 0; i < 2; i++){
-  		ESP_LOGD(TAG, "Valor %02x \n", _data[i]);
+  		ESP_LOGI(TAG, "Valor %02x \n", _data[i]);
   	}
 
-  	ESP_LOGD(TAG, "Valor 0x%02x%02x\n", _data[1],_data[0]);
+  	ESP_LOGI(TAG, "Valor 0x%02x%02x\n", _data[1],_data[0]);
 
-  	ESP_LOGD(TAG, "Fin dir 18 ### \n");
+  	ESP_LOGI(TAG, "Fin dir 18 ### \n");
   	_data[0] = 0;
   	_data[1] = 0;
   	i2c_master_read_slave_reg(0x36, 0x21, _data, 2);
   	for (int i = 0; i < 2; i++){
-  		ESP_LOGD(TAG, "Valor %02x \n", _data[i]);
+  		ESP_LOGI(TAG, "Valor %02x \n", _data[i]);
   	}
-  	ESP_LOGD(TAG, "Fin dir 21### \n");
+  	ESP_LOGI(TAG, "Fin dir 21### \n");
 
-  	ESP_LOGD(TAG, "Ahora probamos el update\n");
+  	ESP_LOGI(TAG, "Ahora probamos el update\n");
 
   	FuelGaugeReads_t BateryData;
   	BateryData.EstimateTimeToEmpty = 0x0000 ;
@@ -83,10 +83,10 @@ static void fuel_gauge_init(void){
 
   	UpdateStatus(&BateryData);
 
-  	ESP_LOGD(TAG, "Tenemos restante %d mAH\n", (int)BateryData.RemainingCapacity);
-  	ESP_LOGD(TAG, "Tenemos restante %f minutos\n",( (float)BateryData.EstimateTimeToEmpty * 5.625)/60 ) ;
-  	ESP_LOGD(TAG, "Tenemos restante %d %%\n", (int)BateryData.StateOfChargePercentage);
-  	ESP_LOGD(TAG, "Capacidad estimada %d maH\n\n", (int)(BateryData.FullCapRep  )/2 ) ;
+  	ESP_LOGI(TAG, "Tenemos restante %d mAH\n", (int)BateryData.RemainingCapacity);
+  	ESP_LOGI(TAG, "Tenemos restante %f minutos\n",( (float)BateryData.EstimateTimeToEmpty * 5.625)/60 ) ;
+  	ESP_LOGI(TAG, "Tenemos restante %d %%\n", (int)BateryData.StateOfChargePercentage);
+  	ESP_LOGI(TAG, "Capacidad estimada %d maH\n\n", (int)(BateryData.FullCapRep  )/2 ) ;
 
   	i2c_dump_reg(0x36,2);
 
@@ -94,7 +94,7 @@ static void fuel_gauge_init(void){
 
 static void touch_init(void){
 
-	ESP_LOGD(TAG, "\n ############## TOUCH ########\n");
+	ESP_LOGI(TAG, "\n ############## TOUCH ########\n");
 	initialize_touch(&touch);
 
 	gpio_config_t io_conf;
@@ -131,14 +131,14 @@ static void touch_init(void){
 
 //  for (;;){
 //  		vTaskDelay(100 / portTICK_RATE_MS);
-//  		ESP_LOGD(TAG, "\nMAIN#####\n");
+//  		ESP_LOGI(TAG, "\nMAIN#####\n");
 //	}
 
 	ft236_t TouchDescription;
 
 	Obtain_Chip_Info(&TouchDescription);
 	i2c_dump_reg(0x38,2);
-	ESP_LOGD(TAG, "VersionInfo %d, FirmID %d, FocaltechPanelID %d, releaseCodeID %d\n InterruptMode %d, ControlMode %d, RateActiveMode %d, RateMonitorMode %d\n",TouchDescription.VersionInfo,TouchDescription.FirmID,TouchDescription.FocaltechPanelID,TouchDescription.ReleaseCodeID,TouchDescription.InterruptMode,TouchDescription.ControlMode,TouchDescription.RateActiveMode,TouchDescription.RateMonitorMode);
+	ESP_LOGI(TAG, "VersionInfo %d, FirmID %d, FocaltechPanelID %d, releaseCodeID %d\n InterruptMode %d, ControlMode %d, RateActiveMode %d, RateMonitorMode %d\n",TouchDescription.VersionInfo,TouchDescription.FirmID,TouchDescription.FocaltechPanelID,TouchDescription.ReleaseCodeID,TouchDescription.InterruptMode,TouchDescription.ControlMode,TouchDescription.RateActiveMode,TouchDescription.RateMonitorMode);
 }
 
 /**
