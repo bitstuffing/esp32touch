@@ -1,3 +1,3 @@
-set(COMPONENT_ADD_INCLUDEDIRS "hardware tjpgd")
+set(COMPONENT_ADD_INCLUDEDIRS "hardware graphics")
 
 register_component()

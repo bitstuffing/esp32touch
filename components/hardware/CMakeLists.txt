@@ -5,6 +5,7 @@ idf_component_register(SRCS
                             "i2cTools.c"
                             "max1726x.c"
                             "bt_app_core.c"
-                      INCLUDE_DIRS
+                            "gbuf.c"
+                      INCLUDE_DIRS "include"
                       REQUIRES driver freertos
                 )

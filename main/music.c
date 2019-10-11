@@ -513,7 +513,7 @@ static void bt_app_av_media_proc(uint16_t event, void *param)
     case APP_AV_MEDIA_STATE_STARTED: {
         if (event == BT_APP_HEART_BEAT_EVT) {
             if (++s_intv_cnt >= 10) {
-                ESP_LOGI(BT_AV_TAG, "a2dp media stopping...");
+                ESP_LOGI(BT_AV_TAG, "a2dp media stopping... (1)");
                 esp_a2d_media_ctrl(ESP_A2D_MEDIA_CTRL_STOP);
                 s_media_state = APP_AV_MEDIA_STATE_STOPPING;
                 s_intv_cnt = 0;
@@ -531,7 +531,7 @@ static void bt_app_av_media_proc(uint16_t event, void *param)
                 esp_a2d_source_disconnect(s_peer_bda);
                 s_a2d_state = APP_AV_STATE_DISCONNECTING;
             } else {
-                ESP_LOGI(BT_AV_TAG, "a2dp media stopping...");
+                ESP_LOGI(BT_AV_TAG, "a2dp media stopping... (2)");
                 esp_a2d_media_ctrl(ESP_A2D_MEDIA_CTRL_STOP);
             }
         }
