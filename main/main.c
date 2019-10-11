@@ -128,12 +128,6 @@ static void touch_init(void){
   //hook isr handler for specific gpio pin again
   gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
 
-
-//  for (;;){
-//  		vTaskDelay(100 / portTICK_RATE_MS);
-//  		ESP_LOGI(TAG, "\nMAIN#####\n");
-//	}
-
 	ft236_t TouchDescription;
 
 	Obtain_Chip_Info(&TouchDescription);
