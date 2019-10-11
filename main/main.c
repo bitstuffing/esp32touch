@@ -13,6 +13,7 @@
 #include "esp_log.h"
 #include "i2cTools.h"
 #include "max1726x.h"
+#include "music.c"
 
 //IRQ, set de los GPIO ----- TOUCH
 
@@ -245,13 +246,15 @@ void app_main(void)
 {
     //ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
     //first load image
-    load_image();
+    //load_image();
     //next background because of spi conflicts - :S
     backlight_init();
 
     touch_init();
 
     fuel_gauge_init();
+
+    bluetooth_init();
 }
 
 /** TODO: put touch event in handler

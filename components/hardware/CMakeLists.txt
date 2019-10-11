@@ -4,6 +4,7 @@ idf_component_register(SRCS
                             "ft236_touch.c"
                             "i2cTools.c"
                             "max1726x.c"
+                            "bt_app_core.c"
                       INCLUDE_DIRS
                       REQUIRES driver freertos
                 )
