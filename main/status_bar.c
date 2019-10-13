@@ -30,7 +30,6 @@ void status_bar_draw(void)
 	UpdateStatus(&BateryData);
 	char bat_str[64];
 	snprintf(bat_str, 64, "BAT: %d%% %dmV", (int)BateryData.StateOfChargePercentage, (int)BateryData.RemainingCapacity);
-  //snprintf(bat_str, 64, "BAT: %d%% %dmV", 1, 4200); //TODO
 
 	// Draw to fb and update section
 	tf_metrics_t m = tf_get_str_metrics(ui_font_black, bat_str);

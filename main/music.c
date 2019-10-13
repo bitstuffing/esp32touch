@@ -511,6 +511,7 @@ static void bt_app_av_media_proc(uint16_t event, void *param)
         break;
     }
     case APP_AV_MEDIA_STATE_STARTED: {
+        ESP_LOGI(BT_AV_TAG, "a2dp media state STARTED");
         if (event == BT_APP_HEART_BEAT_EVT) {
             if (++s_intv_cnt >= 10) {
                 ESP_LOGI(BT_AV_TAG, "a2dp media stopping... (1)");

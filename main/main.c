@@ -13,7 +13,9 @@
 #include "max1726x.h"
 #include "music.c"
 #include "ui.h"
+#include "ui_controls.h"
 #include "status_bar.h"
+#include <string.h>
 
 //IRQ, set de los GPIO ----- TOUCH
 
@@ -39,7 +41,9 @@ static void gpio_task_example(void* arg){
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
           update_touch(&touch);
-		      ESP_LOGI(TAG, "Valor de 1_X %d 1_Y %d Weight %d Valor de 2_X %d 2_Y %d Weight %d",touch.FirstX,touch.FirstY,touch.FirstWeight,touch.SecondX,touch.SecondY,touch.SecondWeight);
+		      //ESP_LOGI(TAG, "Valor de 1_X %d 1_Y %d Weight %d Valor de 2_X %d 2_Y %d Weight %d",touch.FirstX,touch.FirstY,touch.FirstWeight,touch.SecondX,touch.SecondY,touch.SecondWeight);
+          char key = get_keyboard_touched_key(&touch);
+          ESP_LOGI(TAG,"returned is: '%c'",key);
         }
     }
 }
@@ -138,12 +142,8 @@ static void touch_init(void){
 /**
 MAIN
 */
-void app_main(void)
-{
-    //ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
-    //first load image
-    //load_image();
-    //next background because of spi conflicts - :S
+void app_main(void){
+
     backlight_init();
 
     touch_init();
@@ -159,7 +159,7 @@ void app_main(void)
     status_bar_draw();
     status_bar_start();
 
-
+    display_keyboard();
 }
 
 /** TODO: put touch event in handler
