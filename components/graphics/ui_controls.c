@@ -13,7 +13,7 @@
 #include <assert.h>
 #include "esp_log.h"
 
-#define MSG "qazSwsx edc rfv tgb yhnIujmDik,Aol.Apñ-E"
+#define MSG "qazSwsx edc rfv tgb yhnIujmDik,Aol.Ap~-E"
 #define KEYBOARD_START_Y 160
 #define KEYBOARD_COLUMNS 10
 #define KEYBOARD_ROWS 4
@@ -30,7 +30,7 @@ void display_keyboard(void){
     for (int j=1;j<=KEYBOARD_ROWS;j++){
       //display rectangle with label
       const rect_t rKey = (rect_t){.x = (i-1)*KEYBOARD_KEY_WIDTH, .y = KEYBOARD_START_Y + ((j-1)*KEYBOARD_KEY_HEIGHT), .width = KEYBOARD_KEY_WIDTH, .height = KEYBOARD_KEY_HEIGHT};
-    	fill_rectangle(fb, rKey, COLOR_GRAY);
+    	fill_rectangle(fb, rKey, DARKSLATEGRAY);
       char key[2] = "";
       memset(key, 0, sizeof((char)MSG[a++]));
       sprintf(key,"%c",(char)MSG[a++]);
@@ -43,7 +43,6 @@ void display_keyboard(void){
 char get_keyboard_touched_key(touch_t *touch){
   unsigned int firstX = (unsigned int)touch->FirstY;
   unsigned int firstY = (unsigned int)touch->FirstX;
-  //char key[2] = "";
 	char key = '\0';
 
   if(firstY>=KEYBOARD_START_Y){
