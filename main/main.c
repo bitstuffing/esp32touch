@@ -5,20 +5,20 @@
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
-#include "backlight.h"
-#include "display.h"
 
 #include "esp_log.h"
-#include "i2cTools.h"
 
-#include "music.c"
 #include "ui.h"
 #include "ui_controls.h"
 #include "status_bar.h"
-#include <string.h>
 
+#include "backlight.h"
+#include "display.h"
+#include "i2cTools.h"
 #include "touch.c"
 #include "fuelgauge.c"
+#include "bluetooth.c"
+
 
 /**
 MAIN
