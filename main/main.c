@@ -19,11 +19,15 @@
 #include "fuelgauge.c"
 #include "bluetooth.c"
 
+#include "decode_image.h"
+
+static uint16_t **pixels;
 
 /**
 MAIN
 */
 void app_main(void){
+    esp_err_t ret;
 
     backlight_init();
 
@@ -40,5 +44,10 @@ void app_main(void){
     status_bar_draw();
     status_bar_start();
 
-    display_keyboard();
+    //display_keyboard();
+
+    ret=decode_image(&pixels);
+    ESP_ERROR_CHECK(ret);
+
+    ui_draw_image(pixels,40,40,96,96);
 }

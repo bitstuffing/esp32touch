@@ -162,3 +162,5 @@ void ui_free(void);
 void ui_message_error(const char *msg);
 /// Draw the pathbar that is located under the status bar
 void ui_draw_pathbar(const char *left, const char *right, bool fruncate);
+/// Draw image to screen buffer
+void ui_draw_image(uint16_t **pixels,int xP,int yP,int width,int height);
