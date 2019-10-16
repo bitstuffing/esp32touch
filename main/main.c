@@ -41,13 +41,22 @@ void app_main(void){
 
     ui_init();
 
+    //Reference the binary-included jpeg file
+    extern uint8_t imageJpg[] asm("_binary_background_jpg_start");
+
+    ret=decode_image(&pixels,imageJpg,320,240);
+    ESP_ERROR_CHECK(ret);
+
+    ui_draw_image(pixels,0,0,320,240);
+
+    extern uint8_t imageJpgFolder[] asm("_binary_folder_jpg_start");
+    ret=decode_image(&pixels,imageJpgFolder,320,240);
+    ESP_ERROR_CHECK(ret);
+
+    //ui_draw_image(pixels,0,0,96,96);
+
     status_bar_draw();
     status_bar_start();
 
     //display_keyboard();
-
-    ret=decode_image(&pixels);
-    ESP_ERROR_CHECK(ret);
-
-    ui_draw_image(pixels,40,40,96,96);
 }

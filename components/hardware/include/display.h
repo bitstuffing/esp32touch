@@ -36,5 +36,5 @@ void display_update_rect(rect_t r);
 void display_drain(void);
 void display_screenshot(const char *path);
 void send_continue_line(uint16_t *line, int width, int height);
-void send_lines(int ypos, uint16_t *linedata);
+void send_lines(int ypos, int height,uint16_t *linedata);
 void send_line_finish();

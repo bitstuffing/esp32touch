@@ -22,21 +22,13 @@ format if you want to use a different image file.
 #include "esp_log.h"
 #include <string.h>
 
-//Reference the binary-included jpeg file
-extern const uint8_t image_jpg_start[] asm("_binary_folder_jpg_start");
-extern const uint8_t image_jpg_end[] asm("_binary_folder_jpg_end");
-//Define the height and width of the jpeg file. Make sure this matches the actual jpeg
-//dimensions.
-#define IMAGE_W 320
-#define IMAGE_H 240
-
 const char *TAG = "ImageDec";
 
 //Data that is passed from the decoder function to the infunc/outfunc functions.
 typedef struct {
     const unsigned char *inData; //Pointer to jpeg data
     uint16_t inPos;              //Current position in jpeg data
-    uint16_t **outData;          //Array of IMAGE_H pointers to arrays of IMAGE_W 16-bit pixel values
+    uint16_t **outData;          //Array of height pointers to arrays of width 16-bit pixel values
     int outW;                    //Width of the resulting file
     int outH;                    //Height of the resulting file
 } JpegDev;
@@ -79,7 +71,7 @@ static uint16_t outfunc(JDEC *decoder, void *bitmap, JRECT *rect)
 #define WORKSZ 3100
 
 //Decode the embedded image into pixel lines that can be used with the rest of the logic.
-esp_err_t decode_image(uint16_t ***pixels)
+esp_err_t decode_image(uint16_t ***pixels,uint8_t image_jpg_start[],int width,int height)
 {
     char *work = NULL;
     int r;
@@ -89,14 +81,14 @@ esp_err_t decode_image(uint16_t ***pixels)
     esp_err_t ret = ESP_OK;
 
     //Alocate pixel memory. Each line is an array of IMAGE_W 16-bit pixels; the `*pixels` array itself contains pointers to these lines.
-    *pixels = calloc(IMAGE_H, sizeof(uint16_t *));
+    *pixels = calloc(height, sizeof(uint16_t *));
     if (*pixels == NULL) {
         ESP_LOGE(TAG, "Error allocating memory for lines");
         ret = ESP_ERR_NO_MEM;
         goto err;
     }
-    for (int i = 0; i < IMAGE_H; i++) {
-        (*pixels)[i] = malloc(IMAGE_W * sizeof(uint16_t));
+    for (int i = 0; i < height; i++) {
+        (*pixels)[i] = malloc(width * sizeof(uint16_t));
         if ((*pixels)[i] == NULL) {
             ESP_LOGE(TAG, "Error allocating memory for line %d", i);
             ret = ESP_ERR_NO_MEM;
@@ -116,8 +108,8 @@ esp_err_t decode_image(uint16_t ***pixels)
     jd.inData = image_jpg_start;
     jd.inPos = 0;
     jd.outData = *pixels;
-    jd.outW = IMAGE_W;
-    jd.outH = IMAGE_H;
+    jd.outW = width;
+    jd.outH = height;
 
     //Prepare and decode the jpeg.
     r = jd_prepare(&decoder, infunc, work, WORKSZ, (void *)&jd);
@@ -139,7 +131,7 @@ esp_err_t decode_image(uint16_t ***pixels)
 err:
     //Something went wrong! Exit cleanly, de-allocating everything we allocated.
     if (*pixels != NULL) {
-        for (int i = 0; i < IMAGE_H; i++) {
+        for (int i = 0; i < height; i++) {
             free((*pixels)[i]);
         }
         free(*pixels);

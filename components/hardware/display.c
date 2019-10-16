@@ -17,7 +17,7 @@ static spi_device_handle_t spi;
 static TaskHandle_t xTaskToNotify = NULL;
 static bool waitForTransactions = false;
 
-SemaphoreHandle_t odroid_spi_mutex = NULL;
+SemaphoreHandle_t spi_mutex = NULL;
 
 static uint16_t *pbuf[2];
 gbuf_t *fb = NULL;
@@ -296,7 +296,7 @@ void display_init(void)
 
 	ESP_LOGI("display", "xSemaphoreCreateMutex...");
 
-	odroid_spi_mutex = xSemaphoreCreateMutex();
+	spi_mutex = xSemaphoreCreateMutex();
 
 	ESP_LOGI("display", "initializing ili...");
 	ili_init();
@@ -305,7 +305,7 @@ void display_init(void)
 
 void display_drain(void)
 {
-	xSemaphoreTake(odroid_spi_mutex, portMAX_DELAY);
+	xSemaphoreTake(spi_mutex, portMAX_DELAY);
 	// Drain SPI queue
 	xTaskToNotify = 0;
 
@@ -315,14 +315,14 @@ void display_drain(void)
 		spi_transaction_t *trans_desc;
 		err = spi_device_get_trans_result(spi, &trans_desc, 0);
 	}
-	xSemaphoreGive(odroid_spi_mutex);
+	xSemaphoreGive(spi_mutex);
 }
 
 void display_poweroff()
 {
 	display_drain();
 
-	xSemaphoreTake(odroid_spi_mutex, portMAX_DELAY);
+	xSemaphoreTake(spi_mutex, portMAX_DELAY);
 	// Disable LCD panel
 	int cmd = 0;
 	while (ili_sleep_cmds[cmd].databytes != 0xff) {
@@ -333,12 +333,12 @@ void display_poweroff()
 		}
 		cmd++;
 	}
-	xSemaphoreGive(odroid_spi_mutex);
+	xSemaphoreGive(spi_mutex);
 }
 
 void display_clear(uint16_t color)
 {
-	xSemaphoreTake(odroid_spi_mutex, portMAX_DELAY);
+	xSemaphoreTake(spi_mutex, portMAX_DELAY);
 	xTaskToNotify = xTaskGetCurrentTaskHandle();
 
 	send_reset_drawing(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -357,12 +357,12 @@ void display_clear(uint16_t color)
 
 	waitForTransactions = true;
 	send_continue_wait();
-	xSemaphoreGive(odroid_spi_mutex);
+	xSemaphoreGive(spi_mutex);
 }
 
 void display_update(void)
 {
-	xSemaphoreTake(odroid_spi_mutex, portMAX_DELAY);
+	xSemaphoreTake(spi_mutex, portMAX_DELAY);
 	xTaskToNotify = xTaskGetCurrentTaskHandle();
 
 	send_reset_drawing(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -375,7 +375,7 @@ void display_update(void)
 
 	waitForTransactions = true;
 	send_continue_wait();
-	xSemaphoreGive(odroid_spi_mutex);
+	xSemaphoreGive(spi_mutex);
 }
 
 void display_update_rect(rect_t r)
@@ -387,7 +387,7 @@ void display_update_rect(rect_t r)
 	assert(r.x + r.width <= DISPLAY_WIDTH);
 	assert(r.y + r.height <= DISPLAY_HEIGHT);
 
-	xSemaphoreTake(odroid_spi_mutex, portMAX_DELAY);
+	xSemaphoreTake(spi_mutex, portMAX_DELAY);
 
 	xTaskToNotify = xTaskGetCurrentTaskHandle();
 	send_reset_drawing(r.x, r.y, r.width, r.height);
@@ -415,7 +415,7 @@ void display_update_rect(rect_t r)
 
 	waitForTransactions = true;
 	send_continue_wait();
-	xSemaphoreGive(odroid_spi_mutex);
+	xSemaphoreGive(spi_mutex);
 }
 
 void display_screenshot(const char *path)
@@ -425,7 +425,7 @@ void display_screenshot(const char *path)
 }
 
 
-void send_lines(int ypos, uint16_t *linedata)
+void send_lines(int ypos,int height, uint16_t *linedata)
 {
     esp_err_t ret;
     int x;
@@ -451,8 +451,8 @@ void send_lines(int ypos, uint16_t *linedata)
     trans[0].tx_data[0]=0x2A;           //Column Address Set
     trans[1].tx_data[0]=0;              //Start Col High
     trans[1].tx_data[1]=0;              //Start Col Low
-    trans[1].tx_data[2]=(320)>>8;       //End Col High
-    trans[1].tx_data[3]=(320)&0xff;     //End Col Low
+    trans[1].tx_data[2]=(height)>>8;       //End Col High
+    trans[1].tx_data[3]=(height)&0xff;     //End Col Low
     trans[2].tx_data[0]=0x2B;           //Page address set
     trans[3].tx_data[0]=ypos>>8;        //Start page high
     trans[3].tx_data[1]=ypos&0xff;      //start page low
@@ -460,7 +460,7 @@ void send_lines(int ypos, uint16_t *linedata)
     trans[3].tx_data[3]=(ypos+PARALLEL_LINES)&0xff;  //end page low
     trans[4].tx_data[0]=0x2C;           //memory write
     trans[5].tx_buffer=linedata;        //finally send the line data
-    trans[5].length=320*2*8*PARALLEL_LINES;          //Data length, in bits
+    trans[5].length=height*2*8*PARALLEL_LINES;          //Data length, in bits
     trans[5].flags=0; //undo SPI_TRANS_USE_TXDATA flag
 
     //Queue all transactions.
