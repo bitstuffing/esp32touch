@@ -47,16 +47,29 @@ void app_main(void){
     ret=decode_image(&pixels,imageJpg,320,240);
     ESP_ERROR_CHECK(ret);
 
-    ui_draw_image(pixels,0,0,320,240);
+    //ui_draw_image(pixels,0,0,320,240);
 
-    extern uint8_t imageJpgFolder[] asm("_binary_folder_jpg_start");
-    ret=decode_image(&pixels,imageJpgFolder,320,240);
-    ESP_ERROR_CHECK(ret);
+    extern uint8_t imageBmpFolder[] asm("_binary_folder_bmp_start");
+    //ret=decode_image(&pixels,imageJpgFolder,320,240);
+    //ESP_ERROR_CHECK(ret);
 
     //ui_draw_image(pixels,0,0,96,96);
 
-    status_bar_draw();
-    status_bar_start();
+    //rect_t window_rect = (rect_t){.x = 0, .y = 32, .width = DISPLAY_WIDTH, .height = DISPLAY_HEIGHT - 32};
+
+    gbuf_t img = {.width = (uint16_t)24,
+        .height = (uint16_t)24,
+        .bytes_per_pixel = 2,
+        .data = (uint8_t *)&imageBmpFolder,
+        .big_endian = false};
+
+    blit(fb, (rect_t){.x = 0, .y = 0, .width = img.width, .height = img.height - 1}, &img,
+	     (rect_t){.x = 0, .y = 1, .width = img.width, .height = img.height - 1});
+
+    display_update_rect((rect_t){.x = 0, .y = 0, .width = img.width, .height = img.height - 1});
+
+    //status_bar_draw();
+    //status_bar_start();
 
     //display_keyboard();
 }
