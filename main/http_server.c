@@ -397,8 +397,8 @@ esp_err_t start_file_server(const char *base_path)
     static struct file_server_data *server_data = NULL;
 
     /* Validate file storage base path */
-    if (!base_path || strcmp(base_path, "/spiffs") != 0) {
-        ESP_LOGE(TAG, "File server presently supports only '/spiffs' as base path");
+    if (!base_path || !(strcmp(base_path, "/spiffs") == 0 || strcmp(base_path, "/sdcard") == 0)) {
+        ESP_LOGE(TAG, "File server presently supports only '/spiffs' or '/sdcard' as base path");
         return ESP_ERR_INVALID_ARG;
     }
 

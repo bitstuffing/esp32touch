@@ -30,8 +30,12 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#define ESP_WIFI_SSID      "CasaAP"
-#define ESP_WIFI_PASS      "9036082343823451496755"
+
+#include "sdcard.h"
+
+
+#define ESP_WIFI_SSID      "SSID"
+#define ESP_WIFI_PASS      "PASS"
 #define ESP_WIFI_RETRY  15
 
 const int WIFI_CONNECTED_BIT = BIT0;
@@ -76,7 +80,7 @@ esp_err_t init_spiffs(void){
 }
 
 
-static void event_handler(void* arg, esp_event_base_t event_base,
+static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
@@ -101,17 +105,13 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
 
 void connect_wifi(){
-  s_wifi_event_group = xEventGroupCreate();
-
   tcpip_adapter_init();
-
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-  ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
-  ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
+  ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
 
   wifi_config_t wifi_config = {
       .sta = {
@@ -139,25 +139,38 @@ void app_main(void){
 
     fuel_gauge_init();
 
-    bluetooth_init();
+    //bluetooth_init();
 
     display_init();
 
     ui_init();
 
-    //status_bar_draw();
-    //status_bar_start();
+    status_bar_draw();
+    status_bar_start();
 
-    display_image();
+    //display_image();
 
-    //display_keyboard();
+    display_keyboard();
+
+    //init spiffs
+    init_spiffs();
 
     //Initialize NVS
+
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
       ESP_ERROR_CHECK(nvs_flash_erase());
       ret = nvs_flash_init();
     }
+    ESP_ERROR_CHECK(ret);
 
-    //connect_wifi();
+    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+
+    connect_wifi();
+
+    ret = sdcard_init("/sdcard");
+    ESP_ERROR_CHECK(ret);
+
+    ret = start_file_server("/sdcard");
+    ESP_ERROR_CHECK(ret);
 }

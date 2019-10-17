@@ -39,10 +39,10 @@ siendo el data[1] el más significativo.
     //Definiciones de la bateria
     typedef struct
 {
-    uint16_t DesignCap;
-    uint16_t IchgTerm;
-    uint16_t FullSOCThr; //Valor de detecion de carga en % del total.
-    uint16_t VEmpty;
+    uint8_t DesignCap;
+    uint8_t IchgTerm;
+    uint8_t FullSOCThr; //Valor de detecion de carga en % del total.
+    uint8_t VEmpty;
     float ChargeVoltage;
     int BatRemoves;
 
@@ -74,7 +74,7 @@ void UpdateStatus(FuelGaugeReads_t *FuelGaugeData)
 {
 
 
-    uint16_t AuxCMD_ = 0x000;
+    uint8_t AuxCMD_ = 0x000;
     //leemos Status
     i2c_master_read_slave_reg(MAX1726X_ADDR,STATUS_REG,&AuxCMD_,2);
     AuxCMD_=0x0000;
@@ -116,7 +116,7 @@ void UpdateStatus(FuelGaugeReads_t *FuelGaugeData)
     //un reset de la bateria, tanto software como hardware. Si se detecta debe ser bajado
     //por el software para poder revisar el siguiente reset.
 
-    uint16_t StatusPor = 0x0000;
+    uint8_t StatusPor = 0x0000;
     i2c_master_read_slave_reg(MAX1726X_ADDR, STATUS_REG, &StatusPor, 2);
 
     ESP_LOGD(TAG, "Valor 0x%04x\n", (StatusPor & 0x0002));
@@ -131,7 +131,7 @@ void UpdateStatus(FuelGaugeReads_t *FuelGaugeData)
 
 //##Revisar con bit si llegamos a este estado con la placa jugando.... que lagearia.
 
-uint16_t FSTAT_DNR = 0x0000;
+uint8_t FSTAT_DNR = 0x0000;
 do{
 
     i2c_master_read_slave_reg(MAX1726X_ADDR, FSTAT_REG, &FSTAT_DNR, 2);
@@ -145,12 +145,12 @@ ESP_LOGD(TAG, "Salimos........");
 
 */
 
-uint16_t HibCFG = 0x0000;
+uint8_t HibCFG = 0x0000;
 
 i2c_master_read_slave_reg(MAX1726X_ADDR, HibCFG_REG, &HibCFG, 2); //Guardamos el valor original
 
 //Para salir del modo "hibernate" se deben mandar 3 comandos.
-uint16_t AuxCMD=0x0090;
+uint8_t AuxCMD=0x0090;
 AuxCMD=0x0000;
 i2c_master_write_slave_reg(MAX1726X_ADDR, HibCFG_REG, &AuxCMD, 2);
 i2c_master_write_slave_reg(MAX1726X_ADDR, SOFT_WAKE_UP_REG, &AuxCMD, 2);
@@ -175,7 +175,7 @@ if (Batery.ChargeVoltage > 4.275){
 
 //Poll ModelCFG.Refresh(highest bit),
 //proceed to Step 3 when ModelCFG.Refresh=0.
-uint16_t ModelCFG_Refresh=0x000;
+uint8_t ModelCFG_Refresh=0x000;
 do {
     i2c_master_read_slave_reg(MAX1726X_ADDR, MODEL_CFG_REG, &ModelCFG_Refresh, 2);
     ESP_LOGD(TAG, "\n Bucle actualizacion modelo\n");
@@ -184,7 +184,7 @@ do {
 i2c_master_write_slave_reg(MAX1726X_ADDR,HibCFG_REG, &HibCFG, 2);//Restituimos el HibCFG.
 
 //Finalizamos configuracion
-uint16_t Status=0x0000;
+uint8_t Status=0x0000;
 i2c_master_read_slave_reg(MAX1726X_ADDR, STATUS_REG, &Status, 2);
 Status= Status & 0xFFFD;
 i2c_master_write_slave_reg(MAX1726X_ADDR, STATUS_REG, &Status, 2);

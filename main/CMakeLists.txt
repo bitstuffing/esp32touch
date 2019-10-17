@@ -5,4 +5,4 @@ idf_component_register(SRCS "main.c"
                             "image.c"
                             "http_server.c"
                     INCLUDE_DIRS "include"
-                    EMBED_FILES "background.jpg" "folder.bmp" "folder.jpg" "favicon.ico" "upload_script.html")
+                    EMBED_FILES "background.jpg" "folder.bmp" "favicon.ico" "upload_script.html")
