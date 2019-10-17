@@ -3,6 +3,6 @@
 #include "display.h"
 #include "ui.h"
 
-static uint16_t **pixels;
+uint16_t **pixels;
 
 void display_image();
