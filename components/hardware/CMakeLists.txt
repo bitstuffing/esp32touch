@@ -7,6 +7,7 @@ idf_component_register(SRCS
                             "bt_app_core.c"
                             "gbuf.c"
                             "sdcard.c"
+                            "esp_slave.c"
                       INCLUDE_DIRS "include"
                       REQUIRES driver freertos fatfs
                 )

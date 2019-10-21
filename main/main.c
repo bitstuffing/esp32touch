@@ -132,6 +132,9 @@ void connect_wifi(){
 MAIN
 */
 void app_main(void){
+    esp_err_t ret = NULL;
+
+    /*
 
     backlight_init();
 
@@ -157,7 +160,7 @@ void app_main(void){
 
     //Initialize NVS
 
-    esp_err_t ret = nvs_flash_init();
+    ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
       ESP_ERROR_CHECK(nvs_flash_erase());
       ret = nvs_flash_init();
@@ -166,7 +169,9 @@ void app_main(void){
 
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
 
-    connect_wifi();
+    //connect_wifi();
+
+    */
 
     ret = sdcard_init("/sdcard");
     ESP_ERROR_CHECK(ret);
